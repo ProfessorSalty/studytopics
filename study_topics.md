@@ -41,16 +41,81 @@ point, an encrypted channel of communication has been established.
 
 # Cryptography
 
-### What is DSA?
-### What is RSA?
+### DSA
+#### What is it?
+The Digital Signature Algorithm (DSA) is a standard for processing digital signatures. The algorithm produces a signature consisting of two numbers, _r_ and _s_, which are both 160-bits in length. It is primarily used to create assymetric keys.
+
+#### How does it work?
+Person A wants to sign a certificate that person B can validate. Person A will be the party who creates the signature while person B decrypts it.
+
+**Steps to create keys**
+1. Select a prime number, _q_, with bit length _l_.
+2. Select another prime number _p_ that
+    * has bit length _l_
+    * _q_ divides into _p_ - 1
+3. Select a generator, _𝝰_ of the unique cyclic group of order _q_ in
+   ℤ % _q_. This means that the generator must be a number where
+   _𝝰_<sup>q</sup> is 1, and no power less than _q_ will be 1.
+    * Select some number _g_ in ℤ % _q_ and compute:
+        > _𝝰_ = (g <sup> _p_ - 1 / _q_ </sup> % _p_)
+    * Repeat until _𝝰_ is not 1
+4. Select some random integer _d_ such that 1 ≤ _d_ ≤ _q_ - 1
+5. Compute:
+    > <strong>B</strong> = (_𝝰_<sup>_d_</sup> % _p_)
+
+The public key is _k_<sub>pub</sub> = (_p_, _q_, _𝝰_, _B_)
+
+The private key is _k_<sub>pr</sub> = _d_
+
+**Steps to use keys to sign data**
+1. Pick an **ephemeral key**, K<sub>E</sub>, such that 0 ≤ K<sub>E</sub> ≤ _q_
+2. Compute
+    > _r_ = (_𝝰_<sup>K<sub>E</sub></sup> % _p_) % _q_
+3. Compute
+    > _s_ = (SHA(message) + _d_ * _r_) K<sub>E</sub><sup>-1</sup> % q
+
+    _Note the use of an SHA hash function to get a fingerprint of the message_
+
+**Steps to verify a signature**
+1. Compute
+    > _u_<sub>1</sub> = s<sup>-1</sup> * SHA(message) % _q_
+2. Compute
+    > _u_<sub>2</sub> = s<sup>-1</sup> * r % _q_
+3. Compute
+    > _V_ = (_𝝰_<sup>_u_<sub>1</sub></sup>B<sup>_u_<sub>2</sub></sup> % _p_) % _q_
+4. If _V_ == _r_ % _q_, then the signature is valid
+
+### RSA
+
+#### What is it?
+#### How does it work?
 ### How does DSA differ from RSA?
 ### What is AES?
 
-### What is the Diffie-Hellman exchange?
+### What is the Diffie-Hellman exchange algorithm?
+Diffie-Hellman is a way for two parties to come up with a shared secret that can be used for symmetical encryption without having to send any compromising data in the clear.
+
 ### How does Diffie-Hellman work?
+DFE relies on a straightforward mathmatical property of exponents.
+> (M<sup>a</sup>)<sup>b</sup> % p == (M<sup>b</sup>)<sup>a</sup> % p
+
 ### What is elliptic-curve cryptography?
+Because [elliptic functions](https://en.wikipedia.org/wiki/Elliptic_function)
+are periodic, inputs can be mapped to a finite set of numbers within a group,
+much like we accomplish with modular arithmetic in Diffie-Hellman. By using
+[point multiplication](https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication),
+a shared secret key can be derived for key agreement protocols like
+Diffie-Hellman.
+
 ### How is elliptic-curve cryptography used?
+Elliptic-curve cryptography is useful for key agreement, digital signatures,
+and number generators. Its use in encryption is in key agreement for symmetic
+encryption.
+
 ### Why would elliptic-curve cryptography be used?
+We use elliptic-curve cryptography because its very efficient. To reach the
+same level of security that we would get from a 3,000+ bit key using modular
+arithemtic, we only need 256 bits using elliptic functions.
 
 ### What is SHA?
 
@@ -157,5 +222,5 @@ script could access cookies, send data to another server, run a cryptocurrency
 miner, or any number of activities that are unwanted by the user.
 ### What do we do for defense?
 Browser protections vary by vendor, but the most effective protection is to
-anitize all input to neutralize HTML.
+sanitize all input to neutralize HTML.
 
