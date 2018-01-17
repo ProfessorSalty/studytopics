@@ -133,6 +133,60 @@ keep the data they had and use clever tricks to add new data.
 # Scalability and Architecture
 
 # Common HTTP Headers
+## Request Fields
+<dl>
+    <dt>Accept</dt>
+    <dd>Lists acceptable Content-Type for response</dd>
+    <dt>Accept-Encoding</dt>
+    <dd>Lists acceptable encodings (ex. gzip, deflate)</dd>
+    <dt>Accept-Language</dt>
+    <dd>Lists acceptable languages for response</dd>
+    <dt>Access-Control-Request-Method</dt>
+    <dt>Access-Control-Request-Headers</dt>
+    <dd>Initiates a request for cross-origin resource sharing</dd>
+    <dt>Authorization</dt>
+    <dd>Credentials for HTTP authentication</dd>
+    <dt>Cache-Control</dt>
+    <dd>Used to specify directives that _must_ be obeyed by all caching mechanisms along the request-response chain (the client and any intermediate servers)</dd>
+    <dt>Connection</dt>
+    <dd>Control options for the current connection and list of hop-by-hop request fields.  Must not be used with HTTP/2.</dd>
+    <dt>Cookie</dt>
+    <dd>An HTTP cookie previously sent by the server with `Set-Cookie`</dd>
+    <dt>Content-Type</dt>
+    <dd>The MIME type of the request body (for use with POST and PUT)</dd>
+    <dt>Date</dt>
+    <dd>The date and time that the message was originated</dd>
+    <dt>Forwarded</dt>
+    <dd>Disclose original information of a client connecting to a web server through an HTTP proxy</dd>
+    <dt>Host</dt>
+    <dd>The domain name of the server (virtual or real) and the TCP port number on which the server is listening (omitted if standard). Mandatory in HTTP/1.1, but omitted in HTTP/2</dd>
+    <dt>If-Modified-Since</dt>
+    <dd>Allows _304 Not Modified_ to be returned if content is unchanged (by date)</dd>
+    <dt>If-None-Match</dt>
+    <dd>Allows a _304 Not Modified_ to be returned if content is unchanged (ETag)</dd>
+    <dt>Origin</dt>
+    <dd>Initiates a request for CORS (asks server for Access-Control-* fields)</dd>
+    <dt>Referer [_sic_]</dt>
+    <dd>Misspelled. The address of the previous web page from which a link the currently requested page was followed.</dd>
+    <dt>User-Agent</dt>
+    <dd>The user agent string</dd>
+    <dt>Upgrade</dt>
+    <dd>Ask the server to upgrade to another protocol (ex. HTTPS/1.2, websocket). Cannot upgrade to HTTP/2.</dd>
+    <dt>X-Requested-With</dt>
+    <dd>Mainly used to identiy AJAX requests. Most JavaScript frameworks send this field with value of XMLHttpRequest.</dd>
+    <dt>DNT</dt>
+    <dd>Do not track request.</dd>
+    <dt>X-Forwarded-For</dt>
+    <dd>De facto standard for identifying originating IP address of a client connecting to a web server through an HTTP proxy or load balancer. Superceded by _Forwarded_ header.</dd>
+    <dt>X-Forwarded-Host</dt>
+    <dd>Like X-Forwarded-For, but identifies the host rather than IP address. Also superceded by _Forwarded_</dd>
+    <dt>X-Forwarded-Proto</dt>
+    <dd>Like X-Forarded-For, but identifies the protocol rather than the IP address. Also superceded by _Forwarded_</dd>
+    <dt>X-Csrf-Token</dt>
+    <dd>Transmit token to prevent CSRF attack.</dd>
+</dl>
+
+## Response fields
 
 # Data Structures
 
