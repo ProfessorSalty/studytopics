@@ -187,6 +187,93 @@ keep the data they had and use clever tricks to add new data.
 </dl>
 
 ## Response fields
+<dl>
+    <dt>Access-Control-Allow-Origin,
+Access-Control-Allow-Credentials,
+Access-Control-Expose-Headers,
+Access-Control-Max-Age,
+Access-Control-Allow-Methods,
+Access-Control-Allow-Headers</dt>
+    <dd>Specifies which sites, methods, and headers can participate in CORS.</dd>
+    <dt>Accept-Patch</dt>
+    <dd>Specifies which patch document formats the server supports.</dd>
+    <dt>Age</dt>
+    <dd>The age the object has been in proxy cache (seconds).</dd>
+    <dt>Allow</dt>
+    <dd>Valid methods for a specified resource. Disallowed methods result in _405 Method Not Allowed_</dd>
+    <dt>Cache-Control</dt>
+    <dd>Instructs all caching mechanisms from server to client whether the object can be cached, and for how long. Measured in seconds.</dd>
+    <dt>Connection</dt>
+    <dd>Control options for the current connection and list hop-by-hop response fields. Must not use with HTTP/2.</dd>
+    <dt>Content-Disposition</dt>
+    <dd>Indicates whether the response body content should be displayed **inline** - that is, as markup - or as an attachment to be saved on the client machine.</dd>
+    <dt>Content-Encoding</dt>
+    <dd>Specifies the encoding type.</dd>
+    <dt>Content-Language</dt>
+    <dd>The natural language of the content.</dd>
+    <dt>Content-Length</dt>
+    <dd>The length of the response body in octets (8-bit bytes).</dd>
+    <dt>Content-Location</dt>
+    <dd>An alternate location for the returned data.</dd>
+    <dt>Content-MD5</dt>
+    <dd>A Base64-encoded binary MD5 sum of the response content.</dd>
+    <dt>Content-Type</dt>
+    <dd>MIME type of the content.</dd>
+    <dt>Date</dt>
+    <dd>The date and time that the message wa sent.</dd>
+    <dt>ETag</dt>
+    <dd>Identifies a specific version of the resource for comparing against cached copies.</dd>
+    <dt>Expires</dt>
+    <dd>Gives the date/time after which the response is considered stale.</dd>
+    <dt>Last-Modified</dt>
+    <dd>The last modified date for the requested object.</dd>
+    <dt>Link</dt>
+    <dd>Used to express a typed relationship with another resource.</dd>
+    <dt>Location</dt>
+    <dd>Used in redirection, or when a new resource has been created.</dd>
+    <dt>Proxy-Authenticate</dt>
+    <dd>Request authentication to access the proxy.</dd>
+    <dt>Public-Key-Pins</dt>
+    <dd>[HTTP Public Key Pinning](https://en.wikipedia.org/wiki/HTTP_Public_Key_Pinning), announces hash of website's authentic TLS certificate.</dd>
+    <dt>Retry-After</dt>
+    <dd>If an entity is temporarily unavailable, instructs the client when to try again (seconds or HTTP-date).</dd>
+    <dt>Server</dt>
+    <dd>Name of the server.</dd>
+    <dt>Set-Cookie</dt>
+    <dd>Sets an HTTP cookie.</dd>
+    <dt>Strict-Transport-Security</dt>
+    <dd>Defines HSTS policy for the client, how long to cache the HTTPS only policy and whether it applies to subdomains.</dd>
+    <dt>Transfer-Encoding</dt>
+    <dd>The encoding used to transfer data to the user. Must not be used with HTTP/2.</dd>
+    <dt>Tk</dt>
+    <dd>Response to DNT. Possible values:
+        > "!" — under construction
+        "?" — dynamic
+        "G" — gateway to multiple parties
+        "N" — not tracking
+        "T" — tracking
+        "C" — tracking with consent
+        "P" — tracking only if consented
+        "D" — disregarding DNT
+        "U" — updated
+    </dd>
+    <dt>Upgrade</dt>
+    <dd>Ask the client to upgrade to another protocol. Cannot be used with HTTP/2.</dd>
+    <dt>WWW-Authenticate</dt>
+    <dd>Indicates the authentication scheme that should be used to access the requested content.</dd>
+    <dt>X-Frame-Options</dt>
+    <dd>Clickjacking protection: deny - no rendering within a frame; sameorigin - no rendering if origin mismatch; allow-from - allow from specified location; allowall - allow from any location (nonstandard).</dd>
+    <dt>Upgrade-Insecure-Requests</dt>
+    <dd>Tells a server which hosts mixed content that the client would prefer redirection to HTTPS and can handle `Content-Security-Policy: upgrade-insecure-requests`. Must not be used with HTTP/2.</dd>
+    <dt>X-Powered-By</dt>
+    <dd>Specifies the server technology (related to X-Runtime and X-Version).</dd>
+    <dt>X-Request-ID, X-Correlation-ID</dt>
+    <dd>Correlates HTTP requests between client and server.</dd>
+    <dt>X-UA-Compatible</dt>
+    <dd>Recommends the preferred rendering engine.</dd>
+    <dt>X-XSS-Protection</dt>
+    <dd>Cross-site scripting filter.</dd>
+</dl>
 
 # Data Structures
 
@@ -278,3 +365,17 @@ miner, or any number of activities that are unwanted by the user.
 Browser protections vary by vendor, but the most effective protection is to
 sanitize all input to neutralize HTML.
 
+## JSONP
+### What is it?
+### Why do we use it?
+
+## CORS
+### What is it?
+### Why do we use it?
+
+## HSTS
+### What is it?
+
+## Clickjacking
+### What is it?
+### How do we do for defense?
