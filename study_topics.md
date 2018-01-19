@@ -1,4 +1,50 @@
 # JavaScript Concurrency
+[Phillip Roberts: What the heck is the event loop anyway?](https://www.youtube.com/watch?v=8aGhZQkoFbQ)
+
+[Loupe](http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D)
+
+### Web APIs
+The browser provides many APIs that developers use. Functions like `setTimeout`
+or `console.log` do not exist in the JavaScript engine, but refer to functions
+provided by the platform. Calls to these functions are delegated out fromt the
+JavaScript runtime and sent to the browser. Any callbacks are pushed to the
+task queue to be handled later.
+
+### Frame
+The frame is a structured collection of data important to the function call. It
+includes the return address of the function, any arguments passed to it, the
+lexical environment of the function (or a reference to it), and a space for
+local variables.
+
+### Frame Stack
+Each function call adds a _frame_ to the stack. Function calls are nested by
+using the stack's First-In-Last-Out ordering. Frames are popped off of the
+stack when the function returns.
+
+### Message (or Task) Queue
+Functions can be referred to by a message. Callbacks are pushed to the queue as
+a message after the asynchronous function has finished execution. The message
+merely refers to the function.
+
+### Render Queue
+Because we're in a single threaded environment, the runtime must juggle both
+script execution and rendering. Rendering has a higher priority, so the render
+queue will be checked before the task queue. This means that if rendering takes
+a long time, it will block script execution. Similarly, if a function on the
+call stack takes too long to finish, it will block rendering.
+
+It may be that there is no physically separate render queue. Both tasks and messages could be in the same priority queue.
+
+### Heap
+Objects are allocated in the heap - a large, unstructured section of memory for the application.
+
+### Event Loop
+The event loop continually checks the stack and the queues at regular intervals.
+When the stack is empty, it dequeues the first message in the queue and adds
+its referenced function to the stack to be executed.
+
+### Communication
+Web workers and cross-origin `iframe`s have their own stack, heap, and message queues. The two runtimes communicate via the `postMessage` method, which will send a message of arbitrary data to any other runtimes that are listening to the `message` event.
 
 # Public Key Infrastructure
 ### Goals
@@ -38,6 +84,8 @@ CHANGE_CYPHER_SPEC message, indicating that the client is ready to switch to
 symmeitrcal encryption. When the server receives the shared secret and the
 message, it sends a CHANGE_CYPHER_SPEC message back to the client. At this
 point, an encrypted channel of communication has been established.
+
+### What is HTTP/2?
 
 # Cryptography
 
@@ -141,8 +189,8 @@ keep the data they had and use clever tricks to add new data.
     <dd>Lists acceptable encodings (ex. gzip, deflate)</dd>
     <dt>Accept-Language</dt>
     <dd>Lists acceptable languages for response</dd>
-    <dt>Access-Control-Request-Method</dt>
-    <dt>Access-Control-Request-Headers</dt>
+    <dt>Access-Control-Request-Method,
+    Access-Control-Request-Headers</dt>
     <dd>Initiates a request for cross-origin resource sharing</dd>
     <dt>Authorization</dt>
     <dd>Credentials for HTTP authentication</dd>
