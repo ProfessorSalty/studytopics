@@ -85,6 +85,17 @@ symmeitrcal encryption. When the server receives the shared secret and the
 message, it sends a CHANGE_CYPHER_SPEC message back to the client. At this
 point, an encrypted channel of communication has been established.
 
+### What is long polling?
+
+### What is DTD (Document Type Declaration)?
+
+A DTD defines the structure, legal elements, and attributes of an XML document.
+
+* PCDATA - A Parsed Character Data. XML parsers usually parse all the text in an XML document.
+
+* CDATA - While CDATA is an Unparsed Character Data, the term is used about text data that should not be parsed by the XML parser.
+
+
 ### What is HTTP/2?
 
 # Cryptography
@@ -325,6 +336,10 @@ Access-Control-Allow-Headers</dt>
 
 # Data Structures
 
+## Thunk
+### What is it?
+### Why do we use it?
+
 ## Bloom Filters
 ### What is it?
 Bloom filters are a way to map arbitrary values to indicies in an array. Data
@@ -385,6 +400,10 @@ maintain a flat indentation style that is readable.
 
 # Security
 
+## Mixed Content
+### What is it?
+### Why is it a problem?
+
 ## Cross Site Request Forgery
 ### What is it?
 A CSRF attack is one that exploits a site that accepts unauthorized actions
@@ -415,6 +434,7 @@ sanitize all input to neutralize HTML.
 
 ## JSONP
 ### What is it?
+Browser security prevents code execution if it was received via JavaScirpt from a domain other than what is currently in context. This is a security feature meant to mitigate XSS attacks, but it can be frustrating to deal with if your app is meant to get data from one or more different sources. Browsers do allow script tags to download arbitrary JavaScript code, however, and JSONP is a hack that gets around browser security by placing the download request in a generated script element.
 ### Why do we use it?
 
 ## CORS
