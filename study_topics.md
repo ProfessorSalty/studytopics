@@ -254,10 +254,114 @@ keep the data they had and use clever tricks to add new data.
 * Debugging is easier as there is only one value for the structure.
 
 # Scalability and Architecture
+## Microservices
+### What are they?
+The microservice architecture is an application style that structures app's
+logic in loosely coupled services which are usually distributed among distinct
+systems. For instance, a server app may itself simply handle client requests,
+and operations like data fetching or image processing will be handled by
+sending a request to yet another machine.
+
+### Why are they useful?
+Microservices make development easier to plan and scale because each service
+can focus on their own goals and implementations without having to worry about
+what any other team is doing. So long as there is a stable API for the services
+to communicate with each other, modules may be refactored, updated, and tested
+separately where a monolithic app would have to be tested for regressions in
+its entirity before each deployment.
+
+Using microservices, it is also much easier to scale an application's backend
+to include as many client platforms as needed. Because services are so loosely
+coupled, they can be mixed into any app stack without having to build a tightly
+itegrated monolith.
+
+## SaaS
+### What does it mean?
+SaaS (Software as a Service)is a delivery model that turns software into
+something that the user pays to access rather than something they pay to
+obtain. Such services are typically access via a thin client, most often a web
+browser.
+
+## PaaS
+### What does it mean?
+PaaS (Platform as a Service) takes the same concepts as SaaS but applies them
+specifically to developers who want to create apps without having to manage
+their own infrastructure. This could come in the form of a cloud service that
+the user can access from anywhere, or a private service which is local to their
+own intranet or even their own system.
+
+Because it streamlines setup and removes many opportunities for mistakes, PaaS
+can accelerate development and reduce friction for new employees.
 
 # HTTP
+## What is it?
+HTTP (Hypertext transfer protocol)is an application protocol that connects distributed hypermedia information systems. It is defined as structured text which uses logical links betwen nodes (hyperlinks) to exchange or transfer hypertext. It is stateless.
+
+HTTP has been the foundational protocol for the internet.
+
+### Definitions:
+<dl>
+    <dt>Session</dt>
+    <dd>A series of request-response transactions between server and client.
+    Begins with a client hello mesage on port 80 (443 for SSl). Server responds
+    with requested resource (if any) or an error code.</dd>
+    <dt>Authentication scheme</dt>
+    <dd>A challenge-response mechanism that verifies the client's identity.
+    HTTP provides basic access and digest access schemes but is also
+    extensible.</dd>
+    <dt>Authentication realms</dt>
+    <dd>Realms divide resources within a single URI to allow for more granular access.</dd>
+    <dt>Methods</dt>
+    <dd>A text indication that categorizes the desired action to be performed
+    by the server.</dd>
+    <dt>Status code</dt>
+    <dd>A 3-digit numeric code that, along with the <emph>reason phrase</emph>,
+    describes the response and its outcome.</dd>
+    <dt>Persistent connection</dt>
+    <dd>HTTP/1.1 introduced a <emph>keep-alive</emph> mechanism. Prior to this
+    version, connections were close after a single request-response pair and
+    any subsequent requests needed to restart the TCP handshake. Because this
+    is slow, persistent connections reduces latency and with other
+    optimizations (chunked transfer encoding, pipelining, byte serving),
+    connections become noticebly faster.</dd>
+    <dt>Session state</dt>
+    <dd>Because HTTP is stateless, there is no protocol definition for
+    maintaining connection state. Some applications do manage connection state
+    by using cookies or hidden tokens in web forms.</dd>
+    <dt>Chunked transfer encoding</dt>
+    <dd>Allows the server to maintain a persistent connection for dynamicaly
+    generated content. Because the length of the content isn't known before it
+    has been completed, the Content-Length header cannot be used. Chunked
+    encoding allows the server to send the data in discrete chunks that do not
+    have to have any knowledge of any other chunk, with the final chunk
+    explicitly indicating that the content is finished. Chunking also allows
+    the server to send additional header fields after the body which cannot be
+    known until the content has been produced. An example of this is digital
+    signatures. Without chunking, the sender would have to buffer data until it
+    was complete in order to calculate these field values.</dd>
+    <dt>HTTP pipelining</dt>
+    <dd>Pipelining allows for multiple HTTP requests to be made in a single TCP
+    connection without waiting for each response. This technique dramatically
+    improves page load times. Each request is queued by the server, so they are
+    processed in the order that they are received and while each request can be
+    made without waiting for any response, the response to any one request
+    could be blocked if there were a problem with the request made before it.
+    Idempotent requests can be pipelined, but POST should never be.
+    </dd>
+    <dt>Byte serving</dt>
+    <dd>This allows a client to request only a particular piece of a file.
+    Servers advertise their willingness to serve partial requests with the
+    <emph>Accept-Ranges</emph> response header, and subsequent requests from
+    the client can use the <emph>Range</emph> header to specify the byte range
+    of the request. Successful partial requests are returned with a 206 status
+    code. If the range is invalid, the response includes a 416 code. Byte
+    serving is an important part of media streaming, as well as reading very
+    large PDF documents.</dd>
+</dl>
+
 
 ## Common Headers
+
 ### Request Fields
 <dl>
     <dt>Accept</dt>
@@ -490,7 +594,32 @@ maintain a flat indentation style that is readable.
 
 ## Mixed Content
 ### What is it?
+Mixed content occurs when the initial HTML is loaded over a secure (HTTPS)
+connection, but other resources (media, stylesheets, scripts) are loaded over
+insecure (HTTP). It is broken up into two general categories:
+
+* Passive - This is content that does not interact with the rest of the page.
+  This includes images, video, and audio.
+* Active - This is content that does interact with the rest of the page. This
+  includes scripts, stylesheets, iframes, flash, and other code that the
+  browser can execute. Active Mixed Content has the highest potential for
+  damage to the user.
+
 ### Why is it a problem?
+* Secrecy - HTTPS prevents an attacker from evesdropping on requests. Mixed
+  content reveals those requests. This opens up the user to man-in-the-middle
+  attack.
+* Integrity - HTTPS lets the browser detect if an attacker has changed any of
+  the data the browser is receiving. While this is important for media and
+  other content, it's critical for scripts that transfer sensitive data.
+* Authentication - It's important to know that the server you're requesting
+  data from is the same server that you expect and not someone impersonating
+  your bank.
+
+### How do we prevent it?
+* Always use HTTPS URLS when loading resources.
+* Use the Content-Security-Policy-Report-Only header to monitor mixed content errors on your site.
+* Use the upgrade-insecure-requests CSP directive to protect visitors.
 
 ## Cross Site Request Forgery
 ### What is it?
