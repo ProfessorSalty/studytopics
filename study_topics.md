@@ -64,58 +64,6 @@ and then with person B's public key. Person B, being the only person with thier
 private key, then is able to assert that the message was both intended for them
 and sent by person A.
 
-# HTTPS
-### Why do we need it?
-HTTPS is meant to accomplish two things: allow the client to verify the
-identity of the server, and provide a way to establish a secure connection
-without sending sensitive data in the clear.
-
-### How does it work?
-SSL certificates are signed and verified using the chain of trust. When a
-client wants to establish a secure connection, they initiate the TLS handshake.
-Starting with a CLIENT_HELLO message, the handshake involves selecting a cypher
-suite, then having the server transmit its SSL certificate. The client decrypts
-the certificate using the issuing authority's public key, which reveals the
-server's public key. Now the client has both established the server's identity
-and a way to encrypt data which can only be decrypted by the server. The client
-picks some random prime number to server as the shared secret, then encrypts
-that secret with the public key and sends it back to the server with a
-CHANGE_CYPHER_SPEC message, indicating that the client is ready to switch to
-symmeitrcal encryption. When the server receives the shared secret and the
-message, it sends a CHANGE_CYPHER_SPEC message back to the client. At this
-point, an encrypted channel of communication has been established.
-
-### What is long polling?
-Long polling is an application design pattern that allows the server to "push"
-data to the client, which is normally not possible in HTTP. The client
-initiates a connection as normal, but the connection is set to stay open for a
-long time. When the connection closes, the client opens a new one. The problem
-with this method is that both servers and browsers can support only a set
-number of active connections, so long polling can easily eat into available
-resources.
-
-### What is DTD (Document Type Declaration)?
-
-A DTD defines the structure, legal elements, and attributes of an XML document.
-
-* PCDATA - A Parsed Character Data. XML parsers usually parse all the text in an XML document.
-
-* CDATA - Marks code that could be parsed as XML, but indicates that it should _not_ be. CDATA is like a comment, but with some key differences:
-
-    - CDATA is still part of the document, whereas comments are stripped away.
-    - CDATA cannot include the string `]]>` because it ends the block. Comments
-      cannot include double dashes `--` because it ends the comment block.
-
-    - CDATA will interpolate [Parameter Entity References](http://www.w3.org/TR/REC-xml/#dt-PERef) while comments will not.
-
-### What is HTTP/2?
-
-
-### What is WebSockets?
-WebSockets is a fully duplex protocol for client-server communication over a single TCP connection.
-
-### What are Server-sent DOM events?
-
 # Cryptography
 
 ### DSA
@@ -357,6 +305,14 @@ HTTP has been the foundational protocol for the internet.
     code. If the range is invalid, the response includes a 416 code. Byte
     serving is an important part of media streaming, as well as reading very
     large PDF documents.</dd>
+    <dt>Long Polling</dt>
+    <dd>Long polling is an application design pattern that allows the server to "push"
+data to the client, which is normally not possible in HTTP. The client
+initiates a connection as normal, but the connection is set to stay open for a
+long time. When the connection closes, the client opens a new one. The problem
+with this method is that both servers and browsers can support only a set
+number of active connections, so long polling can easily eat into available
+resources.</dd>
 </dl>
 
 
@@ -522,6 +478,27 @@ updated resource in a full response, including a new ETag.
 * OPTIONS: First step in CORS. Requests information about the methods and headers supporting cross origin requests.
 * HEAD: Retrieves just the response headers with no message body.
 * CONNECT: Establishes a network connection to a resource. Returns a 200 status code and "Connection Established" message.* HEAD: Retrieves just the response headers with no message body.
+
+## HTTPS
+### Why do we need it?
+HTTPS is meant to accomplish two things: allow the client to verify the
+identity of the server, and provide a way to establish a secure connection
+without sending sensitive data in the clear.
+
+### How does it work?
+SSL certificates are signed and verified using the chain of trust. When a
+client wants to establish a secure connection, they initiate the TLS handshake.
+Starting with a CLIENT_HELLO message, the handshake involves selecting a cypher
+suite, then having the server transmit its SSL certificate. The client decrypts
+the certificate using the issuing authority's public key, which reveals the
+server's public key. Now the client has both established the server's identity
+and a way to encrypt data which can only be decrypted by the server. The client
+picks some random prime number to server as the shared secret, then encrypts
+that secret with the public key and sends it back to the server with a
+CHANGE_CYPHER_SPEC message, indicating that the client is ready to switch to
+symmeitrcal encryption. When the server receives the shared secret and the
+message, it sends a CHANGE_CYPHER_SPEC message back to the client. At this
+point, an encrypted channel of communication has been established.
 
 # Data Structures
 
@@ -785,3 +762,26 @@ XHMTL
 A stateful protocol is one in which the responder maintains information about the requesting entity across multiple requests from the same source.
 
 A stateless protocol treats each request as an independent transaction, providing all of the information required for the connection.
+
+### What is DTD (Document Type Declaration)?
+
+A DTD defines the structure, legal elements, and attributes of an XML document.
+
+* PCDATA - A Parsed Character Data. XML parsers usually parse all the text in an XML document.
+
+* CDATA - Marks code that could be parsed as XML, but indicates that it should _not_ be. CDATA is like a comment, but with some key differences:
+
+    - CDATA is still part of the document, whereas comments are stripped away.
+    - CDATA cannot include the string `]]>` because it ends the block. Comments
+      cannot include double dashes `--` because it ends the comment block.
+
+    - CDATA will interpolate [Parameter Entity References](http://www.w3.org/TR/REC-xml/#dt-PERef) while comments will not.
+
+### What is HTTP/2?
+
+
+### What is WebSockets?
+WebSockets is a fully duplex protocol for client-server communication over a single TCP connection.
+
+### What are Server-sent DOM events?
+
