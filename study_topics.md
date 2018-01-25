@@ -86,6 +86,13 @@ message, it sends a CHANGE_CYPHER_SPEC message back to the client. At this
 point, an encrypted channel of communication has been established.
 
 ### What is long polling?
+Long polling is an application design pattern that allows the server to "push"
+data to the client, which is normally not possible in HTTP. The client
+initiates a connection as normal, but the connection is set to stay open for a
+long time. When the connection closes, the client opens a new one. The problem
+with this method is that both servers and browsers can support only a set
+number of active connections, so long polling can easily eat into available
+resources.
 
 ### What is DTD (Document Type Declaration)?
 
@@ -93,10 +100,21 @@ A DTD defines the structure, legal elements, and attributes of an XML document.
 
 * PCDATA - A Parsed Character Data. XML parsers usually parse all the text in an XML document.
 
-* CDATA - While CDATA is an Unparsed Character Data, the term is used about text data that should not be parsed by the XML parser.
+* CDATA - Marks code that could be parsed as XML, but indicates that it should _not_ be. CDATA is like a comment, but with some key differences:
 
+    - CDATA is still part of the document, whereas comments are stripped away.
+    - CDATA cannot include the string `]]>` because it ends the block. Comments
+      cannot include double dashes `--` because it ends the comment block.
+
+    - CDATA will interpolate [Parameter Entity References](http://www.w3.org/TR/REC-xml/#dt-PERef) while comments will not.
 
 ### What is HTTP/2?
+
+
+### What is WebSockets?
+WebSockets is a fully duplex protocol for client-server communication over a single TCP connection.
+
+### What are Server-sent DOM events?
 
 # Cryptography
 
@@ -148,16 +166,28 @@ The private key is _k_<sub>pr</sub> = _d_
 
 #### What is it?
 #### How does it work?
+
 ### How does DSA differ from RSA?
+[source](https://www.quora.com/What-is-the-difference-between-RSA-and-DSA)
+DSA and RSA are very similar in that they are both algorithms that generate asymmetric keys for encryption. DSA is based on disrete logarithms (_𝝰_<sup>_d_</sup> = B) while RSA is based on large-number factorization (P * Q = N). Both methods take a very long time to reverse engineer with modern computers. DSA is a bit faster than RSA when creating a key pair and decrypting. RSA is a bit faster when validating the signature token and encrypting.
+
 ### What is AES?
 
 ### What is the Diffie-Hellman exchange algorithm?
-Diffie-Hellman is a way for two parties to come up with a shared secret that can be used for symmetical encryption without having to send any compromising data in the clear.
+Diffie-Hellman is a way for two parties to come up with a shared secret that
+can be used for symmetical encryption without having to send any compromising
+data in the clear. Instead of sharing sensitive data, both parties are creating
+a key together. Since nothing is ever transmitted or saved, anyone looking at
+the traffic later cannot easily decrypt it.
 
 ### How does Diffie-Hellman work?
 DFE relies on a straightforward mathmatical property of exponents.
 > (M<sup>a</sup>)<sup>b</sup> % p == (M<sup>b</sup>)<sup>a</sup> % p
 
+
+
+[source1](https://security.stackexchange.com/a/45971)
+[related](https://crypto.stackexchange.com/questions/2867/whats-the-fundamental-difference-between-diffie-hellman-and-rsa)
 ### What is elliptic-curve cryptography?
 Because [elliptic functions](https://en.wikipedia.org/wiki/Elliptic_function)
 are periodic, inputs can be mapped to a finite set of numbers within a group,
@@ -178,9 +208,13 @@ arithemtic, we only need 256 bits using elliptic functions.
 
 ### What is SHA?
 
+The Secure Hash Algorithm is a one-way hash function that is meant for
+signatures rather than cryptographic encryption. It always outputs a 160-bit
+number that can be used to verify the integrity of the data.
+
 # Immutable Data Structures
 ### What are they?
-Immutable data structures are any data structure whose value cannot change. In
+Immutable data structures are any data structure whose value or state cannot change. In
 practice, most "immutable" data structures are actually _persistant_ data
 structures. The difference is that while immutable data structures absolutely
 cannot change their value, persistant data structures can, though they always
@@ -189,10 +223,42 @@ keep the data they had and use clever tricks to add new data.
 ### How do they work?
 ### Why are they useful?
 
+[source](http://www.yegor256.com/2014/06/09/objects-should-be-immutable.html)
+* Thread safety - because the state of any object cannot be modified, threads
+  working on the same data can only copy it to their own memory space in stack
+  in order to manipulate it. This means it's impossible for any one thread to
+  interfere with the operation of another.
+
+* Temporal Coupling - Objects that take configuration to work can be tricky to
+  manage since misconfigurations will only be exposed during runtime. This
+  makes the code brittle as deleting those calls to the configuration methods
+  would silently break the code. If the object's configuration methods were to
+  return a new object with the desired setting instead of altering internal
+  state, the compiler would be able to watch for code breaking modifications.
+
+* Avoiding side effects - if two different function calls are manipulating the
+  same piece of data, such as sorting an array, then the manipulation has a
+  side effect of altering the array's state for the other function. This leads
+  to bugs and maintainability issues, as well as the extra code required to
+  make defensive copies.
+
+* Failure Atomicity - If an object's methods alter its internal state, an error
+  in one line of code could leave the object's state broken (one field gets
+  updated just before the crash so it no longer accurately represents
+  anything). Forcing the object to return a new object each time the method is
+  called means that any errors just results in a discarded object.
+
+* Immutable data structures can be shared easily by reference and do not
+  require defensive copying.
+
+* Debugging is easier as there is only one value for the structure.
+
 # Scalability and Architecture
 
-# Common HTTP Headers
-## Request Fields
+# HTTP
+
+## Common Headers
+### Request Fields
 <dl>
     <dt>Accept</dt>
     <dd>Lists acceptable Content-Type for response</dd>
@@ -245,7 +311,7 @@ keep the data they had and use clever tricks to add new data.
     <dd>Transmit token to prevent CSRF attack.</dd>
 </dl>
 
-## Response fields
+### Response fields
 <dl>
     <dt>Access-Control-Allow-Origin,
 Access-Control-Allow-Credentials,
@@ -334,11 +400,34 @@ Access-Control-Allow-Headers</dt>
     <dd>Cross-site scripting filter.</dd>
 </dl>
 
+## How does ETag work?
+Each ETag identifies a specific version of a resource. If the resource ever
+changes, so does the ETag. If the resource is downloaded and cached, the ETag
+is stored with it. Any subsequent requests for resource is sent with
+`If-None-Match` its ETag. The server compares the versions, and if they match,
+a 304 response is sent to the client. If they differ, the server sends the
+updated resource in a full response, including a new ETag.
+
+## Methods
+* GET: Retrieves data from the server with no side effects
+* POST: Sends data to the server to create a new entitiy.
+* PUT: Sends data to the server to replace an existing entity.
+* PATCH: Sends data to the server to update an existing entity.
+* DELETE: Remove the specified data from the server.
+* TRACE: Tests which machine receives the request.
+* OPTIONS: First step in CORS. Requests information about the methods and headers supporting cross origin requests.
+* HEAD: Retrieves just the response headers with no message body.
+* CONNECT: Establishes a network connection to a resource. Returns a 200 status code and "Connection Established" message.* HEAD: Retrieves just the response headers with no message body.
+
 # Data Structures
 
 ## Thunk
 ### What is it?
-### Why do we use it?
+A thunk is a pattern that resembles partial completion. A thunk is a function
+that returns another function with all parameters completed but one. This allows
+for function composition and caching the result of a computation for later
+reuse. Very useful when combined with persistent data structures for
+asynchronous operations, such as that used in Redux.
 
 ## Bloom Filters
 ### What is it?
@@ -365,7 +454,6 @@ search.
 Binary search is very fast. A BST allows for searches in the order of Log<sub>2</sub> of
 the number of nodes.
 
-### What are some real world examples of its use?
 ### What does it mean to be balanced?
 
 There is no single definition, but a BST could be considered balanced when the
@@ -428,22 +516,143 @@ Any site that takes user input and injects it into the markup unsanitized is at
 risk for injecting a malicious script into a link or altered web page. The
 script could access cookies, send data to another server, run a cryptocurrency
 miner, or any number of activities that are unwanted by the user.
+
 ### What do we do for defense?
 Browser protections vary by vendor, but the most effective protection is to
 sanitize all input to neutralize HTML.
 
+## What is the same-origin policy?
+The same-origin policy restricts JavaScript's ability to access data in domains
+other than the one it was originally downloaded from. An origin is defined as a
+combination of URI scheme, host name, and port number. This is a security
+measure to prevent malicious scripts from accessing sensitive data on another
+domain, such as the user's bank (the login info would be submitted
+automatically via cookies) and sending it to yet another (the malicious actor's
+own server).
+
 ## JSONP
 ### What is it?
-Browser security prevents code execution if it was received via JavaScirpt from a domain other than what is currently in context. This is a security feature meant to mitigate XSS attacks, but it can be frustrating to deal with if your app is meant to get data from one or more different sources. Browsers do allow script tags to download arbitrary JavaScript code, however, and JSONP is a hack that gets around browser security by placing the download request in a generated script element.
+Browser security prevents code execution if it was received via JavaScirpt from
+a domain other than what is currently in context. This is a security feature
+meant to mitigate XSS attacks, but it can be frustrating to deal with if your
+app is meant to get data from one or more different sources. Browsers do allow
+script tags to download arbitrary JavaScript code, however, and JSONP is a hack
+that gets around browser security by placing the download request in a
+generated script element.
+
 ### Why do we use it?
+JSONP allows us to get around the same-origin security policy by generating a
+script tag and setting its source to the desired endpoint with a function name
+appended on the end. The endpoint responds with the desired code wrapped in the
+function call. Once the browser has downloaded the code, it executes the
+function.
 
 ## CORS
 ### What is it?
+CORS is a mechanism in HTML5 that manages script access to different domains. It works by intercepting all HTTP requests, first sending an OPTIONS request to the server. The server's response includes all REST methods and origins that apply to CORS.
+
 ### Why do we use it?
+Browser security policy prohibits JavaScript from fetching data in another
+domain without CORS enabled. By establishing permitted origin domains, we can open APIs to applications.
 
 ## HSTS
 ### What is it?
 
 ## Clickjacking
 ### What is it?
-### How do we do for defense?
+### What do we do for defense?
+
+# General
+
+### Tips to reduce load times of a web app
+
+* Optimize images to no longer than screen resolution and save it as a compressed file
+
+* Eliminate all JavaScript files to reduce the amount of transferable data
+
+* Combine and minify all CSS and JS files
+
+* Call all JS files at the bottom of the body tag
+
+* Defer or async JS files
+
+* HTTP compression
+
+* Reduce lookups
+
+* Minimize redirects
+
+* Cache
+
+### What is a MIME type?
+The Multipurpose Internet Mail Extensions standard was originally a way to
+extend the format of email to support media, extended character sets, multipart
+message bodies, and header information with non ASCII characters. HTTP has
+adopted the content types for its headers as a way to appropriately select a
+media viewer or process data included with the message.
+
+### What does a MIME multipart message look like?
+MIME messages begin with a message header which contains information about the
+MIME-Version, Content-Type, and boundary. The version will be 1.0, the type
+multipart/mixed. The boundary can be an arbitrary string which will appear in
+the body prepended with two dashes '--'. Each boundary separates distinct MIME
+messages with zero or more content headers and a body.
+
+<pre>
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary=wall
+
+    Message with multiple parts.
+    --wall
+    Content-Type: text/plain
+
+    Here's a text message
+    --wall
+    Content-Type: application/octet-stream
+    Content-Transfer-Encoding: base64
+
+    PGh0bWw+CiAgPGhlYWQ+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPHA+VGhpcyBpcyB0aGUg
+Ym9keSBvZiB0aGUgbWVzc2FnZS48L3A+CiAgPC9ib2R5Pgo8L2h0bWw+Cg==
+    --wall
+</pre>
+
+### Why do we include JavaScript files at the end of the body?
+Script downloads block the download of other resources (images, style, content). By leaving the scripts until all of the markup and content has been downloaded, the page can appear to be loaded more quickly.
+
+### What do the async and defer attributes do for script tags?
+async indicates that the browser should, if possible, execute the script
+asynchronously.
+
+defer indicates that the browser should download the script after the document
+has been parsed, but before firing DOMContentLoaded.
+
+### Why do we include CSS files in the head?
+With the style loaded before the DOM is rendered, the browser can apply CSS
+rules as the elements are loaded.
+
+### What is the difference between cookies and local storage?
+
+|                 | Cookies       | Local Storage  |
+| ----------------|:-------------:| -----:|
+| Client / Server | Data accessible both at client and server side. Data is sent to the server with each HTTP request | Accessible only at the client. Data must be sent manually. |
+| Size            | Storage capacity of cookies is 4095 bytes per cookie      |   Storage capacity of local storage is 5MB per domain |
+| Expiration      | Cookies have expiration and cookie data gets deleted after some time |    There is no expiration and has to be removed manually. |
+
+### How is XHTML different from HTML?
+
+XHMTL
+
+* ...requires that all tags should be lowercase
+
+* ...requires that all tags should be closed with closing tag
+
+* ...requires that all attributes are enclosed in double quotes
+
+* ...forbids inline elements from containing block level elements
+
+### What is a RESTful web service?
+
+### What is the difference between stateless and stateful protocols?
+A stateful protocol is one in which the responder maintains information about the requesting entity across multiple requests from the same source.
+
+A stateless protocol treats each request as an independent transaction, providing all of the information required for the connection.
