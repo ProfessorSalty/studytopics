@@ -117,6 +117,7 @@ The private key is _k_<sub>pr</sub> = _d_
 
 ### How does DSA differ from RSA?
 [source](https://www.quora.com/What-is-the-difference-between-RSA-and-DSA)
+
 DSA and RSA are very similar in that they are both algorithms that generate asymmetric keys for encryption. DSA is based on disrete logarithms (_𝝰_<sup>_d_</sup> = B) while RSA is based on large-number factorization (P * Q = N). Both methods take a very long time to reverse engineer with modern computers. DSA is a bit faster than RSA when creating a key pair and decrypting. RSA is a bit faster when validating the signature token and encrypting.
 
 ### What is AES?
@@ -132,7 +133,18 @@ the traffic later cannot easily decrypt it.
 DFE relies on a straightforward mathmatical property of exponents.
 > (M<sup>a</sup>)<sup>b</sup> % p == (M<sup>b</sup>)<sup>a</sup> % p
 
+1. Person A and Person B agree to use a modulus <i>P</i> and a base <i>G</i>
+   (which is a primitive root modulu <i>P</i>).
 
+2. Person A chooses a secret integer <i>a</i>, calculates <i>A</i> =
+   <i>G</i><sup><i>a</i></sup> % <i>P</i>, then sends the result to Person B.
+
+3. Person B chooses their own secret integer <i>b</i>, calculates <i>B</i>
+   =<i>G</i><sup><i>b</i></sup> % <i>P</i>, then sends the result to Person A.
+
+4. Person A uses Person B's calculation to create the shared secret, <i>s</i> = <i>B<sup>a</sup></i> % <i>P</i>.
+
+5. Person B does the same with Person A's calculation, giving the same shared secret, <i>s</i> = <i>A<sup>b</sup></i> % <i>P</i>.
 
 [source1](https://security.stackexchange.com/a/45971)
 [related](https://crypto.stackexchange.com/questions/2867/whats-the-fundamental-difference-between-diffie-hellman-and-rsa)
@@ -263,10 +275,10 @@ HTTP has been the foundational protocol for the internet.
     <dd>A text indication that categorizes the desired action to be performed
     by the server.</dd>
     <dt>Status code</dt>
-    <dd>A 3-digit numeric code that, along with the <emph>reason phrase</emph>,
+    <dd>A 3-digit numeric code that, along with the <i>reason phrase</i>,
     describes the response and its outcome.</dd>
     <dt>Persistent connection</dt>
-    <dd>HTTP/1.1 introduced a <emph>keep-alive</emph> mechanism. Prior to this
+    <dd>HTTP/1.1 introduced a <i>keep-alive</i> mechanism. Prior to this
     version, connections were close after a single request-response pair and
     any subsequent requests needed to restart the TCP handshake. Because this
     is slow, persistent connections reduces latency and with other
@@ -299,8 +311,8 @@ HTTP has been the foundational protocol for the internet.
     <dt>Byte serving</dt>
     <dd>This allows a client to request only a particular piece of a file.
     Servers advertise their willingness to serve partial requests with the
-    <emph>Accept-Ranges</emph> response header, and subsequent requests from
-    the client can use the <emph>Range</emph> header to specify the byte range
+    <i>Accept-Ranges</i> response header, and subsequent requests from
+    the client can use the <i>Range</i> header to specify the byte range
     of the request. Successful partial requests are returned with a 206 status
     code. If the range is invalid, the response includes a 416 code. Byte
     serving is an important part of media streaming, as well as reading very
@@ -332,7 +344,7 @@ resources.</dd>
     <dt>Authorization</dt>
     <dd>Credentials for HTTP authentication</dd>
     <dt>Cache-Control</dt>
-    <dd>Used to specify directives that _must_ be obeyed by all caching mechanisms along the request-response chain (the client and any intermediate servers)</dd>
+    <dd>Used to specify directives that <i>must</i> be obeyed by all caching mechanisms along the request-response chain (the client and any intermediate servers)</dd>
     <dt>Connection</dt>
     <dd>Control options for the current connection and list of hop-by-hop request fields.  Must not be used with HTTP/2.</dd>
     <dt>Cookie</dt>
@@ -346,12 +358,12 @@ resources.</dd>
     <dt>Host</dt>
     <dd>The domain name of the server (virtual or real) and the TCP port number on which the server is listening (omitted if standard). Mandatory in HTTP/1.1, but omitted in HTTP/2</dd>
     <dt>If-Modified-Since</dt>
-    <dd>Allows _304 Not Modified_ to be returned if content is unchanged (by date)</dd>
+    <dd>Allows <i>304 Not Modified</i> to be returned if content is unchanged (by date)</dd>
     <dt>If-None-Match</dt>
-    <dd>Allows a _304 Not Modified_ to be returned if content is unchanged (ETag)</dd>
+    <dd>Allows a <i>304 Not Modified</i> to be returned if content is unchanged (ETag)</dd>
     <dt>Origin</dt>
     <dd>Initiates a request for CORS (asks server for Access-Control-* fields)</dd>
-    <dt>Referer [_sic_]</dt>
+    <dt>Referer [<i>sic</i>]</dt>
     <dd>Misspelled. The address of the previous web page from which a link the currently requested page was followed.</dd>
     <dt>User-Agent</dt>
     <dd>The user agent string</dd>
