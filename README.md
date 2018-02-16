@@ -174,13 +174,28 @@ number that can be used to verify the integrity of the data.
 
 # Immutable Data Structures
 ### What are they?
-Immutable data structures are any data structure whose value or state cannot change. In
-practice, most "immutable" data structures are actually _persistant_ data
-structures. The difference is that while immutable data structures absolutely
-cannot change their value, persistant data structures can, though they always
-keep the data they had and use clever tricks to add new data.
+Immutable data structures are any data structure whose value or state cannot
+change. In practice, most "immutable" data structures are actually _persistant_
+data structures. The difference is that while immutable data structures
+absolutely cannot change their value, persistant data structures can, though
+they always keep the data they had and use clever tricks to add new data.
 
 ### How do they work?
+Immutability is best handled by a data structure called a Hash Array Mapped
+Trie (HAMT). The idea is that we can break up one array into a prefix tree of
+smaller arrays. Data can be accessed via a string key or numerical index by
+somehow converting the value to a binary representation, then using the binary
+to descend the tree. We can then update the data by copying only the leaf of
+the prefix tree and updating the node pointers to reach the new leaf. Since the
+old data was never removed, it's simple to create multiple references to
+different versions of the same data structure without recreating it entirely.
+This is called "Structural Sharing", and it's the big idea behind Immutability
+in many languages.
+
+* [reference](https://idea.popcount.org/2012-07-25-introduction-to-hamt/)
+* [reference](http://code.hootsuite.com/super-charging-react-with-immutablejs/)
+* [video](https://www.youtube.com/watch?v=Wo0qiGPSV-s&t=651s)
+
 ### Why are they useful?
 
 [source](http://www.yegor256.com/2014/06/09/objects-should-be-immutable.html)
@@ -235,6 +250,24 @@ to include as many client platforms as needed. Because services are so loosely
 coupled, they can be mixed into any app stack without having to build a tightly
 itegrated monolith.
 
+### What problems could microservices introduce?
+
+* Relying on multiple, smaller services can introduce latency in the app. Each
+  service may only take a few milliseconds, but that number scales linearly to
+  the number of services used. Adding features to a monolith, on the other
+  hand, does not require new network calls and so does not generate nearly as
+  much latency.
+
+* Downtime can be more difficult to manage and requires a lot of redundancy. A
+  monolith with 99% uptime is great, but 10 microservices with 99% uptime each
+  works out to 90% uptime total
+
+* While development velocity seems like it should only increase, multiple
+  projects working without coordination or consistent environments can lead to
+  a fragmented codebase where teams become insular and specialized. Similarly,
+  it can be more difficult to get new developers up to speed as the setup is
+  complicated.
+
 ## SaaS
 ### What does it mean?
 SaaS (Software as a Service)is a delivery model that turns software into
@@ -255,7 +288,10 @@ can accelerate development and reduce friction for new employees.
 
 # HTTP
 ## What is it?
-HTTP (Hypertext transfer protocol)is an application protocol that connects distributed hypermedia information systems. It is defined as structured text which uses logical links betwen nodes (hyperlinks) to exchange or transfer hypertext. It is stateless.
+HTTP (Hypertext transfer protocol)is an application protocol that connects
+distributed hypermedia information systems. It is defined as structured text
+which uses logical links betwen nodes (hyperlinks) to exchange or transfer
+hypertext. It is stateless.
 
 HTTP has been the foundational protocol for the internet.
 
@@ -768,7 +804,43 @@ XHMTL
 
 * ...forbids inline elements from containing block level elements
 
-### What is a RESTful web service?
+### What is a RESTful web API?
+REST is a set of constraints outlined by Roy Fielding in his doctoral disseration. The constraints define an architectural style that simplifies and decouples the client from the server.
+
+* Uniform Interface - defines the interface between client and servers. The four guiding principles are:
+  * Resource based: Resources are identified using URIs, but the resources
+    themselves are conceptually separate. A request does not return a database,
+    or any reference to it, but a representation of the data. This means that the
+    data may be transformed in some way to meet the request, such as translation.
+
+  * Manipulation of resources through representations: when a client holds a
+    representation of a resource, including any metadata attached, it has
+    enough information to modify or delete the resource on the server
+    (provided it has permission). So a RESTful request does not need to know
+    about how or where a resource is stored, but just provide a reference to
+    it that the server will understand.
+
+  * Self-descriptive messages: each message includes enough information for
+    the server to process it (e.g. MIME type). Responses explicitly indicate
+    their cache-ability.
+
+  * Hypermedia as the engine of application state (HATEOAS): Hypermedia is
+    defined as the body content of a message, plus any query string parameters,
+    headers, and the URI itself. This is the way application state is delive
+
+* Stateless - The necessary state to handle any request should be contained within the request itself. If the state must span multiple requests, that state should be resent each time. Statelessness ensures that requests will be deterministic, enables greater scalability (the server doesn't have to store, maintain, update, or communicate sessions state), and load balancers don't have to worry about session affinity.
+
+* Cacheable - responses must implicitly or explicitly define themselves as cahcable or not. This improves scalability and performance as both clients and server can eliminate some interactions.
+
+* Client-Server - Separation of concerns between the two roles keeps data in the server and presentation in the client. This improves portability of the client. Either client or server should be replaceable without affecting the other.
+
+* Layered system - A client cannot distinguish between the end server or intermediaries, allowing for transparent proxies to cache data and provide load balancing. May also enforce security policies.
+
+* Code on demand (optional) - Servers are able to temporarily extend or customize the functionality of a client by transferring logic back to it for execution. JavaScript in the browser may be written to process data, for instance.
+
+[reference](http://www.restapitutorial.com/lessons/whatisrest.html)
+
+### What SOAP?
 
 ### What is the difference between stateless and stateful protocols?
 A stateful protocol is one in which the responder maintains information about the requesting entity across multiple requests from the same source.
@@ -796,4 +868,29 @@ A DTD defines the structure, legal elements, and attributes of an XML document.
 WebSockets is a fully duplex protocol for client-server communication over a single TCP connection.
 
 ### What are Server-sent DOM events?
+Clients can be configured to accept events streamed from some server location. The server must be configured to send data with the MIME type "text/event-stream".
 
+```javascript
+var eventSource = new EventSource('some_url', { /* options object */ });
+
+eventSource.onmessage = function(data) {
+// do stuff with data here
+};
+
+eventSource.onerror = function(error) {
+// do stuff with error here
+};
+```
+[reference](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+
+### How would you manually trigger the browser to enable hardware acceleration?
+This is easily accomplished by using 3D transform rules, even if they don't transform anything.
+
+```css
+.some-class {
+  transform: translate3d(0,0,0);
+  /* can also use translateZ */
+  transform: translateZ(0);
+}
+```
+[reference](http://blog.teamtreehouse.com/increase-your-sites-performance-with-hardware-accelerated-css)
