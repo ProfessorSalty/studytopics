@@ -450,6 +450,8 @@ Access-Control-Allow-Headers</dt>
     <dd>An alternate location for the returned data.</dd>
     <dt>Content-MD5</dt>
     <dd>A Base64-encoded binary MD5 sum of the response content.</dd>
+    <dt>Content-Security-Policy</dt>
+    <dd>An added layer of security against XSS and data injection attacks</dd>
     <dt>Content-Type</dt>
     <dd>MIME type of the content.</dd>
     <dt>Date</dt>
@@ -515,6 +517,15 @@ is stored with it. Any subsequent requests for resource is sent with
 `If-None-Match` its ETag. The server compares the versions, and if they match,
 a 304 response is sent to the client. If they differ, the server sends the
 updated resource in a full response, including a new ETag.
+
+## How does Content-Security-Policy work?
+Content-Security-Policy is a way for website administrators to whitelist the
+origins that are allowed to host executable scripts. Any other script source,
+even valid JavaScript that is injected, will not be accepted. CSP can also
+specify security protocols, such as enforcing HTTPS for data transfer and
+redirects, and marking cookies with the secure flag.
+
+[source](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 
 ## Methods
 * GET: Retrieves data from the server with no side effects
@@ -686,7 +697,7 @@ own server).
 
 ## JSONP
 ### What is it?
-Browser security prevents code execution if it was received via JavaScirpt from
+Browser security prevents code execution if it was received via JavaScript from
 a domain other than what is currently in context. This is a security feature
 meant to mitigate XSS attacks, but it can be frustrating to deal with if your
 app is meant to get data from one or more different sources. Browsers do allow
@@ -703,7 +714,10 @@ function.
 
 ## CORS
 ### What is it?
-CORS is a mechanism in HTML5 that manages script access to different domains. It works by intercepting all HTTP requests, first sending an OPTIONS request to the server. The server's response includes all REST methods and origins that apply to CORS.
+CORS is a mechanism in HTML5 that manages script access to different domains.
+It works by intercepting all HTTP requests, first sending an OPTIONS request to
+the server. The server's response includes all REST methods and origins that
+apply to CORS.
 
 ### Why do we use it?
 Browser security policy prohibits JavaScript from fetching data in another
@@ -711,10 +725,27 @@ domain without CORS enabled. By establishing permitted origin domains, we can op
 
 ## HSTS
 ### What is it?
+HTTP Strict Transport Security is a policy that prevents downgrade attacks and
+cookie hijacking by declaring that clients should only interact with the server
+using TLS. It is communicated via the `Strict-Transport-Security` header, which
+also specifies a period of time that HSTS should be respected.
 
 ## Clickjacking
 ### What is it?
+It is possible for a malicious actor to set up a page that entices a user to
+click on something which looks like a good link but actually performs some
+action to the benefit of the actor. For instance, an invisible iframe laid over
+a link to an Amazon product could trigger a share on the user's Facebook page
+or an online purchase somewhere. JavaScript can further obfuscate the hidden
+action by placing the malicious link under the user's cursor at all times so
+every click performs the action.
+
 ### What do we do for defense?
+A site can send the `Content-Security-Policy` or `X-Frame-Options` response
+header to indicate whether the site content can be framed. Other techniques are
+hacks, but can be effective. For instance, loading a CSS rule that hides the
+site's body only if it has been loaded in an iframe will keep it from being
+usable in a clickjacking attack.
 
 # General
 
@@ -841,6 +872,11 @@ REST is a set of constraints outlined by Roy Fielding in his doctoral disseratio
 [reference](http://www.restapitutorial.com/lessons/whatisrest.html)
 
 ### What SOAP?
+Simple Object Access Protocol specifies a structure for exchanging information,
+mainly in web services. It is XML based and gets sent over HTTP. A SOAP message
+consists of 3 parts: an envelope which defines the structure and how to process
+it, a set of encoding rules for expressing instances of application defined
+datatypes, and a convention for representing procedure calls and responses.
 
 ### What is the difference between stateless and stateful protocols?
 A stateful protocol is one in which the responder maintains information about the requesting entity across multiple requests from the same source.
@@ -894,3 +930,24 @@ This is easily accomplished by using 3D transform rules, even if they don't tran
 }
 ```
 [reference](http://blog.teamtreehouse.com/increase-your-sites-performance-with-hardware-accelerated-css)
+
+### What is a factory function?
+
+
+### What is a constructor function?
+
+
+### What does the ES6 class keyword do?
+
+
+### What are the ways that classical paradigms can cause problems in JavaScript?
+
+# Testing
+
+## Vocab
+<dl>
+  <dt>Stub</dt>
+  <dd>A faked method that returns specific data</dd>
+  <dt>Mock</dt>
+  <dd>A stub with an assertion that the method was called</dd>
+</dl>
